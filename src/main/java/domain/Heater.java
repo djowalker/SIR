@@ -2,9 +2,7 @@ package domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -32,16 +30,9 @@ public class Heater {
 		this.reference = reference;
 		this.consommationAvg = consommationAvg;
 	}
-	
-//	public Heater(Heater heater){
-//		this.id=heater.getId();
-//		this.reference=heater.getReference();
-//		this.consommationAvg=heater.getConsommationAvg();
-//		this.home=heater.home;
-//	}
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
@@ -67,7 +58,6 @@ public class Heater {
 	}
 	
 	@ManyToOne
-	//@JoinColumn(name="HOME_ID_FK", referencedColumnName="HOME_REF_ID")
 	public Home getHome(){
 		return this.home;
 	}

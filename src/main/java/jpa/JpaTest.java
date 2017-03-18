@@ -34,26 +34,7 @@ public class JpaTest {
 		EntityTransaction tx = manager.getTransaction();
 		tx.begin();
 			try{
-		
-				
-				Home h = new Home("rue de Vaugirard", "Brest");
-				
-				Heater he = new Heater("24A", 35);
-				List<Heater> hel = new ArrayList<Heater>();
-				hel.add(he);
-				
-				List<ElectronicDevice> edl = new ArrayList<ElectronicDevice>();
-				ElectronicDevice ed = new ElectronicDevice("TV", "SAMSUNG12", 12);
-				edl.add(ed);
-				
-				Home h2 = new Home("rue de test","Lannion",4,100);
-				manager.persist(h);
-				manager.persist(h2);
-				manager.persist(he);
-				manager.persist(ed);
-				
 				test.createPerson();
-				
 			} catch(Exception e){
 				e.printStackTrace();
 			}		
@@ -69,19 +50,24 @@ public class JpaTest {
 	private void createPerson(){
 		int nomOfPerson = manager.createQuery("Select a From Person a",Person.class).getResultList().size();
 		if(nomOfPerson == 0){
-			Person af = new Person("Andy","Ferdinand");
-			Person lf = new Person("Louis","Ferdinand");
-			List<Person> lp = new ArrayList<Person>();
-			List<Home> homeList = new ArrayList<Home>();
-			// les listes correspondent à ce qu'on a créé
-			lp.add(af);
-			lp.add(lf);
-			homeList.add(h2);
-			homeList.add(h);
-			Person gf = new Person("Guy","Ferdinand","jeandGuy@mescouilles.Fr",lp,homeList,ed));
-			manager.persist(gf);
-			manager.persist(lf);
-			manager.persist(af);
+			Home h = new Home("rue de Vaugirard", "Brest");
+			
+			Heater he = new Heater("24A", 35);
+			List<Heater> hel = new ArrayList<Heater>();
+			List<ElectronicDevice> edl = new ArrayList<ElectronicDevice>();
+			
+			ElectronicDevice ed = new ElectronicDevice("TV", "SAMSUNG12", 12);
+			edl.add(ed);
+			
+			Home h2 = new Home("rue de test","Lannion",4,100,hel,edl);
+			manager.persist(h);
+			manager.persist(h2);
+			manager.persist(he);
+			manager.persist(ed);
+			
+			manager.persist(new Person("Guy","Ferdinand"));
+			manager.persist(new Person("Louis","Ferdinand"));
+			manager.persist(new Person("Andy","Ferdinand"));
 		}
 	}
 	
@@ -89,7 +75,7 @@ public class JpaTest {
 		List<Person> resultList = manager.createQuery("Select a From Person a", Person.class).getResultList();
 		System.out.println("num of person : " + resultList.size());
 		for(Person pers : resultList){
-			System.out.println("next Person : " + pers.getName() + " " + pers.getSurname());
+			System.out.println("next PErson : " + pers.getName() + " " + pers.getSurname());
 		}
 	}
 
