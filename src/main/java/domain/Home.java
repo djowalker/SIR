@@ -4,77 +4,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="home")
 public class Home {
 
 	private Long id;
-	private String address;
-	private String Town;
+	private String adresse;
+	private String ville;
 	private int rooms;
 	private int surface;
-	private List<Heater> heaters = new ArrayList<Heater>();
-	private List<ElectronicDevice> devices = new ArrayList<ElectronicDevice>();
+	private List<IntelligentDevice> devices = new ArrayList<IntelligentDevice>();
+	private Person owner;
 	
 	public Home (){
 	}
 
-	public Home(String address, String town) {
-		this.address = address;
-		Town = town;
-	}
-
-	public Home(String address, String town, int rooms, int surface, List<Heater> heaters,
-			List<ElectronicDevice> devices) {
-		this.address = address;
-		Town = town;
-		this.rooms = rooms;
-		this.surface = surface;
-		this.heaters = heaters;
-		this.devices = devices;
-	}
-
-	public Home(String town) {
-		Town = town;
+	public Home(String ad, String vi,int ro,int su,Person own) {
+		adresse = ad;
+		ville = vi;
+		rooms = ro;
+		surface = su;
+		owner = own;
 	}
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue (strategy= GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getAddress() {
-		return address;
+	
+	public String getAdresse() {
+		return adresse;
 	}
-	public void setAddress(String address) {
-		this.address = address;
+
+	public void setAdresse(String adresse) {
+		this.adresse = adresse;
 	}
 	
-	public String getTown() {
-		return Town;
+	@Column (name ="ville")
+	public String getVille() {
+		return ville;
 	}
-	public void setTown(String town) {
-		Town = town;
+	public void setVille(String town) {
+		ville = town;
 	}
 	
-	public int getRoom() {
+	@Column (name ="rooms")
+	public int getRooms() {
 		return rooms;
 	}
 
-	public void setRoom(int room) {
+	public void setRooms(int room) {
 		this.rooms = room;
 	}
 
+	@ManyToOne
+	public Person getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Person owner) {
+		this.owner = owner;
+	}
+	
+	@Column (name ="surf")
 	public int getSurface() {
 		return surface;
 	}
@@ -83,28 +87,19 @@ public class Home {
 		this.surface = surface;
 	}
 
-	@OneToMany(mappedBy = "home", cascade = CascadeType.PERSIST)
-	public List<Heater> getHeaters() {
-		return heaters;
-	}
-
-	public void setHeaters(List<Heater> heaters) {
-		this.heaters = heaters;
-	}
-
-	@OneToMany(mappedBy = "home", cascade = CascadeType.PERSIST)
-	public List<ElectronicDevice> getDevices() {
+	@OneToMany(cascade = CascadeType.ALL)
+	public List<IntelligentDevice> getDevices() {
 		return devices;
 	}
 
-	public void setDevices(List<ElectronicDevice> devices) {
+	public void setDevices(List<IntelligentDevice> devices) {
 		this.devices = devices;
 	}
 
 	@Override
 	public String toString() {
-		return "Home [id=" + id + ", address=" + address + ", Town=" + Town + ", room=" + rooms + ", surface=" + surface
-				+ ", heaters=" + heaters + ", devices=" + devices + "]";
+		return "Home [id=" + id + ", address=" + adresse + ", Town=" + ville + ", room=" + rooms + ", surface=" + surface
+			 + ", owner=" + owner.getName() +" "+owner.getSurname()+ "]";
 	}
 	
 	

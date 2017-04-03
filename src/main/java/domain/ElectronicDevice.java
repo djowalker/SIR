@@ -1,82 +1,42 @@
 package domain;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
-@Table(name="device")
-public class ElectronicDevice {
-	
-	private Long id;
-	private String name;
-	private String reference;
-	private int consommationAvg;
-	private Home home;
+@Table(name = "electronic_device")
+@PrimaryKeyJoinColumn(name = "id")
+public class ElectronicDevice extends IntelligentDevice{
 
-	public ElectronicDevice(){
-		
-	}
+	static final long serialVersionUID = 1L;
+
+	private String name ;
 	
-	public ElectronicDevice(String name, String reference) {
-		this.name = name;
-		this.reference = reference;
-	}
 	
-	public ElectronicDevice(String name, String reference, int consommationAvg) {
-		this.name = name;
-		this.reference = reference;
-		this.consommationAvg = consommationAvg;
+	public ElectronicDevice(String ref, Home hom, int conso,String nam) {
+		super(ref, hom, conso);
+		this.name = nam;
 	}
 
-	@Id
-	@GeneratedValue
-	public Long getId() {
-		return id;
+	public ElectronicDevice(String ref,int conso,String nam){
+		super(ref,conso);
+		this.name = nam;
 	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+	
+	
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
-	}
-	public String getReference() {
-		return reference;
-	}
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-	
-	public int getConsommationAvg() {
-		return consommationAvg;
-	}
-
-	public void setConsommationAvg(int consommationAvg) {
-		this.consommationAvg = consommationAvg;
-	}
-	
-	@ManyToOne
-	public Home getHome(){
-		return this.home;
-	}
-	
-	public void setHome(Home home){
-		this.home = home;
 	}
 
 	@Override
 	public String toString() {
-		return "ElectronicDevice [id=" + id + ", name=" + name + ", reference=" + reference + ", consommationAvg="
-				+ consommationAvg + "]";
-	}
-
-	
-	
-	
-	
+		return "Electronic Device [id= "  + getId() + ", reference= " + getReference() + ", consommationAvg= " + getConsommationAvg() + 
+				", name= " + this.name+" ]";
+	}	
 }

@@ -7,66 +7,34 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.OptimisticLock;
+
 @Entity
 @Table(name="person")
 public class Person {
+	
 	private Long id;
 	private String name;
 	private String surname;
 	private String mail;
-	private List<Person> friend = new ArrayList<Person>();
+	private List<Person> friends = new ArrayList<Person>();
 	private List<Home> homes = new ArrayList<Home>();
-	private List<ElectronicDevice> devices = new ArrayList<ElectronicDevice>();
 	
 	public Person(){
 	}
 	
-	public Person(String name, String surname) {
+	public Person(String name, String surname,String m) {
 		this.name = name;
 		this.surname = surname;
+		this.mail = m;
 	}
 
-	public Person(String name, String surname, String mail, List<Person> friend, List<Home> homes,
-			List<ElectronicDevice> devices) {
-		this.name = name;
-		this.surname = surname;
-		this.mail = mail;
-		this.friend = friend;
-		this.homes = homes;
-		this.devices = devices;
-	}
-
-	@ManyToMany
-	public List<Person> getFriend() {
-		return friend;
-	}
-
-	public void setFriend(List<Person> friend) {
-		this.friend = friend;
-	}
-
-	@OneToMany
-	public List<Home> getHomes() {
-		return homes;
-	}
-
-	public void setHomes(List<Home> homes) {
-		this.homes = homes;
-	}
-
-	@OneToMany
-	public List<ElectronicDevice> getDevices() {
-		return devices;
-	}
-
-	public void setDevices(List<ElectronicDevice> devices) {
-		this.devices = devices;
-	}
 	
 	@Id
     @GeneratedValue
@@ -102,7 +70,31 @@ public class Person {
 		this.mail = mail;
 	}
 
+	@ManyToMany 
+	@OptimisticLock(excluded = false) 
+	public List<Person> getFriends() {
+		return friends;
+	}
 
+	public void setFriends(List<Person> friend) {
+		this.friends = friend;
+	}
 	
 	
+	@OneToMany(cascade = {CascadeType.ALL})
+	@JoinColumn(name="HOME_ID")
+	public List<Home> getHomes() {
+		return homes;
+	}
+
+	public void setHomes(List<Home> homes) {
+		this.homes = homes;
+	}
+	
+	@Override
+    public String toString() {
+        return "Person [ " + this.id+ " : "+ this.name + "  " + this.surname + " , " + this.mail 
+        		+ " , nombre de maison : " + this.homes.size() + " , nombre d'amis :"+this.friends.size()
+        		+" ]";
+    }
 }

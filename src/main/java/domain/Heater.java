@@ -1,79 +1,38 @@
 package domain;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Heater {
+@Table(name = "heater")
+@PrimaryKeyJoinColumn(name = "id")
+public class Heater extends IntelligentDevice{
+static final long serialVersionUID = 1L;
 
-	private Long id;
-	private String reference;
-	private int consommationAvg;
-	private Home home;
-	
-	public Heater() {
-	}
+ 	private String source;
+ 	
 
-	public Heater(String reference, int consommationAvg) {
-		this.reference = reference;
-		this.consommationAvg = consommationAvg;
+	public Heater(String ref, Home hom, int conso,String sour) {
+ 		super(ref, hom, conso);
+ 		this.source = sour;
+ 	}
+ 	public Heater(String ref,int conso,String sour){
+ 		super(ref,conso);
+ 		this.source = sour;
+ 	}
+ 	
+ 	public String getSource() {
+		return source;
 	}
-	
-	public Heater(String reference) {
-		this.reference = reference;
-	}
-
-	public Heater(Long id, String reference, int consommationAvg) {
-		this.id = id;
-		this.reference = reference;
-		this.consommationAvg = consommationAvg;
-	}
-
-	@Id
-	@GeneratedValue
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getReference() {
-		return reference;
-	}
-
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-
-	public int getConsommationAvg() {
-		return consommationAvg;
-	}
-
-	public void setConsommationAvg(int consommationAvg) {
-		this.consommationAvg = consommationAvg;
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
-	@ManyToOne
-	public Home getHome(){
-		return this.home;
-	}
-	
-	public void setHome(Home home){
-		this.home = home;
-	}
-
 	@Override
 	public String toString() {
-		return "Heater [id=" + id + ", reference=" + reference + ", consommationAvg=" + consommationAvg + "]";
-	}
-
-
-
-	
-	
-	
+		return "Heater [id=" + getId() + ", reference=" + getReference() + ", consommationAvg=" + getConsommationAvg() +
+				", Source d'energie : "+this.source+" ]";
+	}	
 }
