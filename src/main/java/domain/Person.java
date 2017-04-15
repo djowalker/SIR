@@ -70,8 +70,8 @@ public class Person {
 		this.mail = mail;
 	}
 
-	@ManyToMany 
-	@OptimisticLock(excluded = false) 
+	@OneToMany
+	@JoinColumn(name="FRIEND_ID")
 	public List<Person> getFriends() {
 		return friends;
 	}
@@ -80,6 +80,9 @@ public class Person {
 		this.friends = friend;
 	}
 	
+	public void addFriend(Person friend){
+		this.friends.add(friend);
+	}
 	
 	@OneToMany(cascade = {CascadeType.ALL})
 	@JoinColumn(name="HOME_ID")

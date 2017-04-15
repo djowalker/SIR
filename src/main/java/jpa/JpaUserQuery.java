@@ -7,8 +7,20 @@ import java.util.Scanner;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Parameter;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SetAttribute;
 
 import domain.*;
 
@@ -19,10 +31,12 @@ public class JpaUserQuery {
 	private Scanner reader;
 
 	private EntityManager manager;
-
+	private CriteriaBuilder cb;
+	
 	public JpaUserQuery(EntityManager manager,Scanner reader) {
 		this.manager = manager;
 		this.reader = reader;
+		this.cb = this.manager.getCriteriaBuilder();
 	}
 
 	private void welcome() throws InterruptedException {
@@ -188,10 +202,24 @@ public class JpaUserQuery {
 		
 	}
 
+	private void addFriend(){
+		String name= "",surname = "";
+		Person person = getPerson(name,surname);
+		Person friend = getPerson(name,surname);
+		friend.getFriends().add(person);
+		person.getFriends().add(friend);
+	}
 	
 	private Home getHomeByAdd(String add) {
-		return manager.createQuery("Select h From Home h where h.adresse=:a ", Home.class).
-				setParameter("a", add).getSingleResult();
+//		return manager.createQuery("Select h From Home h where h.adresse=:a ", Home.class).
+//				setParameter("a", add).getSingleResult();
+		 CriteriaQuery<Home> q = cb.createQuery(Home.class);
+		 Root<Home> c = q.from(Home.class);
+		 Expression<String>path = c.get("adresse");
+		 Predicate condition = cb.like(path, add);
+		 q.where(condition);
+		 TypedQuery<Home> qT = manager.createQuery(q);
+		 return qT.getSingleResult();
 	}
 
 	private void exit(){
@@ -200,7 +228,12 @@ public class JpaUserQuery {
 	}
 	
 	private int numberOfPerson() {
-		return manager.createQuery("Select a From Person a", Person.class).getResultList().size();
+//		return manager.createQuery("Select a From Person a", Person.class).getResultList().size();
+		 CriteriaQuery<Person> q = cb.createQuery(Person.class);
+		 Root<Person> c = q.from(Person.class);
+		 q.select(c);
+		 TypedQuery<Person> qT = manager.createQuery(q);
+		 return qT.getResultList().size();
 	}
 
 	private void createPersonAuto() {
@@ -222,16 +255,36 @@ public class JpaUserQuery {
 	}
 
 	private List<Person> getAllPerson() {
-		return manager.createQuery("Select a From Person a", Person.class).getResultList();
+//		return manager.createQuery("Select a From Person a", Person.class).getResultList();
+		 CriteriaQuery<Person> q = cb.createQuery(Person.class);
+		 Root<Person> c = q.from(Person.class);
+		 q.select(c);
+		 TypedQuery<Person> qT = manager.createQuery(q);
+		 return qT.getResultList();
 	}
 	
 	private List<Home> getAllHome() {
-		return manager.createQuery("Select h From Home h", Home.class).getResultList();
+//		return manager.createQuery("Select h From Home h", Home.class).getResultList();
+		 CriteriaQuery<Home> q = cb.createQuery(Home.class);
+		 Root<Home> c = q.from(Home.class);
+		 q.select(c);
+		 TypedQuery<Home> qT = manager.createQuery(q);
+		 return qT.getResultList();
 	}
 
 	private Person getPerson(String prenom,String nom){
-		return manager.createQuery("Select a From Person a where a.name=:p and a.surname=:n", Person.class).
-				setParameter("n", nom).setParameter("p", prenom).getSingleResult();
+//		return manager.createQuery("Select a From Person a where a.name=:p and a.surname=:n", Person.class).
+		 CriteriaQuery<Person> q = cb.createQuery(Person.class);
+		 Root<Person> c = q.from(Person.class);
+		 ParameterExpression<String> n = cb.parameter(String.class);
+		 ParameterExpression<String> p = cb.parameter(String.class);
+		 Expression<String>pathP = c.get("name");
+		 Expression<String>pathN = c.get("surname");
+		 Predicate condition = cb.like(pathN, n);
+		 Predicate condition2 = cb.like(pathP,p);
+		 q.select(c).where(condition,condition2);
+		 TypedQuery<Person> qT = manager.createQuery(q);
+		 return qT.setParameter(n, nom).setParameter(p, prenom).getSingleResult();
 	}
 	
 	private void listPerson() {
@@ -243,12 +296,23 @@ public class JpaUserQuery {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Home> getHomes(long id) {
-		return manager.createQuery("SELECT h From Person p Join p.homes h Where p.id=:longId")
-				.setParameter("longId", id).getResultList();
+	private List<Home> getHomes(Long id) {
+//		return manager.createQuery("SELECT h From Person p Join p.homes h Where p.id=:longId").setParameter("longId", id).getResultList();
+		 CriteriaQuery<Home> q = cb.createQuery(Home.class);
+		 Metamodel m = manager.getMetamodel();
+		 EntityType<Person> Person_ = m.entity(Person.class);
+
+		 Root<Person> c = q.from(Person.class);
+		 Join<Person, Home> homes = c.joinList("homes");
+		 ParameterExpression<Long> p = cb.parameter(Long.class);
+		 Expression<Long>pathP = c.get("id");
+		 Predicate condition = cb.equal(pathP,p);
+		 q.select(homes).where(condition);
+		 TypedQuery<Home> qT = manager.createQuery(q);
+		 return qT.setParameter(p, id).getResultList();
 	}
 
-	private List<IntelligentDevice> getDevices(long id) {
+	private List<IntelligentDevice> getDevices(Long id) {
 		List<IntelligentDevice> result = new ArrayList<IntelligentDevice>();
 		List<Home> listHome = getHomes(id);
 		for (Home hom : listHome) {
